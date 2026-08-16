@@ -65,14 +65,18 @@ content script 跑在 `document_start`，这样我们的监听器先于页面注
 - `querySelectorAll(':hover')` 正确返回 11 层 hover 链
 - 6 个样式表**全部跨域不可读**，直读收集到 0 条规则；经 fetch 回退救回 89 条
 - 250 个 a / button 中 20 个响应改写后的 CSS，值正确（`Start now` 背景 `rgb(83,58,253)` → `rgb(64,50,200)`，`Contact sales` color + borderColor 同步变）
-- 合成 `blur` / `visibilitychange` / `focusout` 没能关掉 Stripe 的菜单——失焦风险在这个站上没复现，但合成事件不等于真实失焦，拦截器保留
+- 合成 `blur` / `visibilitychange` / `focusout` 没能关掉 Stripe 的菜单
+
+真机验证：
+
+- 扩展在 Chrome 加载后，快捷键、冻结效果、音效、工具栏状态全部正常
+- **真按 `Cmd+Shift+4` 不破功** —— 失焦不会破坏冻结状态。这曾是这个方案里最高的风险（很多菜单靠 `blur` 关自己），现已解除；焦点事件拦截作为对其他站点的防御保留
 
 ## 已知限制
 
 - **延迟关闭**：菜单如果用 `setTimeout` 延迟收起、且计时器在冻结前已启动，吞事件拦不住。
 - **`@layer`**：改写后的规则不再包在原 layer 里，优先级会被抬高。冻结场景下通常无害。
 - **closed shadow root**：拿不到，只能靠吞事件兜底。
-- **真实失焦**：只用合成事件验证过，真机按 `Cmd+Shift+4` 的行为还没实测。
 - **提示音**：自动播放策略在 stripe.com 上验证可以发声（页面无用户手势时 AudioContext 仍为 `running`），但该策略跟站点 Media Engagement Index 有关，冷门站点未必一样。播不出来会静默跳过。
 - **canvas / WebGL**：画在 canvas 里的 hover 效果不归 CSS 管，这套机制无效。
 
