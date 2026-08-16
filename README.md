@@ -88,3 +88,7 @@ icons/             16 / 32 / 48 / 128
 图标是冰蓝渐变底 + 白色光标箭头，配色沿用徽章的 `#6ec8ff`。16 / 32 用加粗尾巴并做轮廓膨胀，48 / 128 用精细形状并带一颗 sparkle——细箭头在 16px 下会被抗锯齿糊掉，小尺寸必须换一版更实的形状。
 
 跨域 CSS 必须由 service worker 取：content script 的 `fetch` 带的是页面 origin，受 CORS 约束，CDN 不发 `Access-Control-Allow-Origin` 就会静默拿不到。service worker 走扩展自己的 origin，用 `host_permissions` 而不是 CORS。
+
+## License
+
+MIT — 随便拿去用、改、发布。
