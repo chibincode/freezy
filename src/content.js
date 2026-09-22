@@ -238,9 +238,9 @@
    * ------------------------------------------------------------------ */
 
   // Loud on arrival, then gone — it must not end up in the screenshot. The countdown says
-  // plainly that the NOTICE is what hides, not the freeze: a bare "3…2…1" that vanishes reads
+  // plainly that the NOTICE is what hides, not the freeze: a bare "2…1" that vanishes reads
   // as "the state expired", and the page would then feel broken rather than held.
-  const TOAST_SECONDS = 3;
+  const TOAST_SECONDS = 2;
   let toastHost = null;
   let toastTimer = null;
 
@@ -267,10 +267,11 @@
                      out 380ms ease ${TOAST_SECONDS * 1000 - 380}ms forwards;
         }
         .row { display: flex; align-items: center; gap: 8px; }
-        .dot {
-          width: 8px; height: 8px; border-radius: 50%; background: #6ec8ff;
-          box-shadow: 0 0 0 0 rgba(110,200,255,.6); animation: pulse 1.6s ease-out infinite;
-        }
+        /* The flake carries the pulse as a glow rather than an expanding ring: a ring around a
+           six-pointed shape reads as a badge behind it, not as a beat. If filters or animation
+           don't run the flake still draws — only the breathing is lost. */
+        .flake { display: block; width: 13px; height: 13px; animation: pulse 1.6s ease-out infinite; }
+        .flake svg { display: block; }
         .title { font-weight: 650; letter-spacing: .04em; font-size: 12.5px; }
         .sub { margin-top: 6px; font-size: 10.5px; opacity: .62; letter-spacing: .01em; }
         kbd {
@@ -284,12 +285,22 @@
         @keyframes rise { from { transform: translateY(8px) scale(.97); } }
         @keyframes out  { to { opacity: 0; transform: translateY(4px); } }
         @keyframes pulse {
-          70%  { box-shadow: 0 0 0 7px rgba(110,200,255,0); }
-          100% { box-shadow: 0 0 0 0 rgba(110,200,255,0); }
+          0%   { filter: drop-shadow(0 0 1px rgba(110,200,255,.85)); }
+          70%  { filter: drop-shadow(0 0 8px rgba(110,200,255,0)); }
+          100% { filter: drop-shadow(0 0 1px rgba(110,200,255,0)); }
         }
       </style>
       <div class="toast">
-        <div class="row"><span class="dot"></span><span class="title">FROZEN</span></div>
+        <div class="row">
+          <span class="flake"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+            stroke="#6ec8ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2v20M3.34 7l17.32 10M20.66 7L3.34 17"/>
+            <path d="M9.3 4.05L12 5.9l2.7-1.85M9.3 19.95L12 18.1l2.7 1.85"/>
+            <path d="M4.15 10.4l.45-3.2 3.2-.45M19.85 13.6l-.45 3.2-3.2.45"/>
+            <path d="M19.85 10.4l-.45-3.2-3.2-.45M4.15 13.6l.45 3.2 3.2.45"/>
+          </svg></span>
+          <span class="title">FROZEN</span>
+        </div>
         <div class="sub">Notice hides in <b id="n">${TOAST_SECONDS}</b>s · <kbd>Esc</kbd> to release</div>
         <div class="track"><div class="fill"></div></div>
       </div>

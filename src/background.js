@@ -37,10 +37,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   // chrome, so it never appears in a page screenshot. The in-page toast is deliberately
   // short-lived, which would otherwise leave the user with no way to tell a frozen page from a
   // broken one.
+  //
+  // The badge takes TEXT and nothing else — no SVG, no image — so the snowflake has to be a
+  // character. U+FE0E after it asks for the text presentation, without which some platforms
+  // substitute a colour emoji and the badge stops matching the rest of the UI.
   if (message?.type === 'freezy:state') {
     const tabId = sender.tab?.id;
     if (tabId == null) return;
-    chrome.action.setBadgeText({ tabId, text: message.frozen ? '●' : '' });
+    chrome.action.setBadgeText({ tabId, text: message.frozen ? '❄︎' : '' });
     chrome.action.setBadgeBackgroundColor({ tabId, color: '#2f9fe8' });
     chrome.action.setTitle({
       tabId,
